@@ -31,7 +31,6 @@ cam = cv2.VideoCapture(0)
 while(True):
 	ret,frame = cam.read()
 	if(ret):
-		print(flag)
 		frame = cv2.flip(frame,1)
 		hsv = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
 		hsv = cv2.dilate(hsv,np.ones((7,7)))
@@ -54,7 +53,7 @@ while(True):
 				pass
 
 		for i in range(1, len(points)):
-			if (points[i - 1] is  not None or points[i] is not None):
+			if ((points[i - 1] is  not None or points[i] is not None) and (points[i - 1] != (-1,-1) and points[i] != (-1,-1))):
 				cv2.line(frame, points[i - 1], points[i], (0, 0, 0), 2)
 				cv2.line(blank_paper, points[i - 1], points[i], (255, 255, 255), 8)
 				
@@ -71,10 +70,13 @@ while(True):
 		
 		elif key == ord('w'):
 			flag = 0
+			print(flag)
 			key = ord('a')
 
 		elif key == ord('z'):
 			flag = 1
+			print(flag)
+			points.appendleft((-1,-1))
 			key = ord('a')
 	else:
 		blank_paper = cv2.cvtColor(blank_paper, cv2.COLOR_RGB2GRAY)
