@@ -9,8 +9,8 @@ lower_yellow = np.array([20, 100, 100])
 upper_yellow = np.array([30, 255,255])
 lower_blue = np.array([90,50,100])
 upper_blue = np.array([120,255,255])
-lower_red = np.array([170,87,111])
-upper_red = np.array([180, 255, 255])
+lower_red = np.array([190,120,7])
+upper_red = np.array([255, 240, 25])
 kernel = np.ones((5, 5), np.uint8)
 blank_paper = np.zeros((480,640,3), dtype=np.uint8)
 blank_paper = cv2.cvtColor(blank_paper,cv2.COLOR_BGR2RGB)
@@ -26,11 +26,12 @@ while (True):
 		print("Wrong input try again")
 		continue
 	break
-
+flag = 1
 cam = cv2.VideoCapture(0)
 while(True):
 	ret,frame = cam.read()
 	if(ret):
+		print(flag)
 		frame = cv2.flip(frame,1)
 		hsv = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
 		hsv = cv2.dilate(hsv,np.ones((7,7)))
@@ -44,26 +45,40 @@ while(True):
 			x,y,w,h = cv2.boundingRect(largest_contour)
 			frame = cv2.rectangle(frame,(x,y),(x+w,y+h),(255,255,255),3)
 			frame = cv2.drawContours(frame, largest_contour, -1, (255,255,0), 3)
-			centre = (int(x + w/2), int(y + h/2))
-			points.appendleft(centre)
+			if (flag == 1):
+				centre = (int(x + w/2), int(y + h/2))
+				points.appendleft(centre)
 
 		else:
 			if(len(points) != 0):
 				pass
 
 		for i in range(1, len(points)):
-			if points[i - 1] is None or points[i] is None:
-				continue
-			cv2.line(frame, points[i - 1], points[i], (0, 0, 0), 2)
-			cv2.line(blank_paper, points[i - 1], points[i], (255, 255, 255), 8)
+			if (points[i - 1] is  not None or points[i] is not None):
+				cv2.line(frame, points[i - 1], points[i], (0, 0, 0), 2)
+				cv2.line(blank_paper, points[i - 1], points[i], (255, 255, 255), 8)
 				
 
 		cv2.imshow(color_name[c-1]+' colour detection',frame)
 		#cv2.imshow(color_name[c-1]+' colour detection',blank_paper)
-
-		if cv2.waitKey(1) & 0xFF == ord('q'):
+		
+		key = cv2.waitKey(1)
+		
+		if key == ord('q'):
+			blank_paper = cv2.cvtColor(blank_paper, cv2.COLOR_RGB2GRAY)
+			cv2.imwrite('new.jpg',blank_paper)
 			break
+		
+		elif key == ord('w'):
+			flag = 0
+			key = ord('a')
+
+		elif key == ord('z'):
+			flag = 1
+			key = ord('a')
 	else:
+		blank_paper = cv2.cvtColor(blank_paper, cv2.COLOR_RGB2GRAY)
+		cv2.imwrite('new.jpg',blank_paper)
 		break
         
 cam.release()
