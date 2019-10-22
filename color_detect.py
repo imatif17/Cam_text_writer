@@ -12,7 +12,7 @@ upper_blue = np.array([120,255,255])
 lower_red = np.array([190,120,7])
 upper_red = np.array([255, 240, 25])
 kernel = np.ones((5, 5), np.uint8)
-blank_paper = np.zeros((480,640,3), dtype=np.uint8)
+blank_paper = np.zeros((750,950,3), dtype=np.uint8)
 blank_paper = cv2.cvtColor(blank_paper,cv2.COLOR_BGR2RGB)
 points = deque(maxlen = 5000)
 
@@ -32,6 +32,7 @@ while(True):
 	ret,frame = cam.read()
 	if(ret):
 		frame = cv2.flip(frame,1)
+		frame = cv2.resize(frame,(900,700))
 		hsv = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
 		hsv = cv2.dilate(hsv,np.ones((7,7)))
 		mask = cv2.inRange(hsv,colors[c-1][0],colors[c-1][1])
@@ -53,7 +54,7 @@ while(True):
 				pass
 
 		for i in range(1, len(points)):
-			if ((points[i - 1] is  not None or points[i] is not None) and (points[i - 1] != (-1,-1) and points[i] != (-1,-1))):
+			if ((points[i - 1] is not None or points[i] is not None) and (points[i - 1] != (-1,-1) and points[i] != (-1,-1))):
 				cv2.line(frame, points[i - 1], points[i], (0, 0, 0), 2)
 				cv2.line(blank_paper, points[i - 1], points[i], (255, 255, 255), 8)
 				
